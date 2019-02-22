@@ -35,6 +35,8 @@ class EventListViewController: UIViewController {
     var needUpdateList: Bool = false
     var lastOpenedIndex: Int = -1
 
+    var stressLimit: Int = 1000
+    
     var eventList: [ListEventsQuery.Data.ListEvent.Item?] = []
     
     lazy var refreshControl: UIRefreshControl = {
@@ -123,10 +125,34 @@ class EventListViewController: UIViewController {
     // MARK: - Click handlers
     
     @objc func addTapped() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "AddEventViewController")
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//        let vc = storyboard.instantiateViewController(withIdentifier: "AddEventViewController")
+//
+//        self.navigationController?.pushViewController(vc, animated: true)
         
-        self.navigationController?.pushViewController(vc, animated: true)
+        self.stressTest()
+    }
+    
+    func stressTest() {
+        DispatchQueue.main.async {
+            if self.stressLimit <= 0 { return }
+            self.stressLimit -= 1
+            print(self.stressLimit)
+            let randString = self.randomString(length: 500)
+            let addEventMutation = AddEventMutation(name: randString,
+                                                    when: randString,
+                                                    where: randString,
+                                                    description: randString)
+            
+            self.appSyncClient?.perform(mutation: addEventMutation)
+            self.stressTest()
+        }
+        
+    }
+    
+    func randomString(length: Int) -> String {
+        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return String((0...length-1).map{ _ in letters.randomElement()! })
     }
 }
 
