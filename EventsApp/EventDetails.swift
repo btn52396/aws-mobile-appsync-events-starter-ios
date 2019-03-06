@@ -61,7 +61,7 @@ class EventDetailsViewController : UIViewController {
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "New Comment", style: .plain, target: self, action: #selector(addComment))
         
-        fetchEventFromServer()
+         fetchEventFromServer()
 
         do {
             try startSubscriptionForEvent()
